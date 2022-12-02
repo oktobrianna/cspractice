@@ -5,6 +5,7 @@ def generate_random_string(character_pool: str, target_string: str) -> str:
     """Generate a string of characters randomly chosen from a
     provided pool, equal to the length of a target string.
     """
+    
     random_string = ""
     while len(random_string) < len(target_string):
         new_char = choice(character_pool)
@@ -100,7 +101,8 @@ def generate_matching_sequence_fast(character_pool: str, target_string: str) -> 
     Call scoring function to count number of matching characters.
     Revise the sequence with single random characters, keeping correct ones, until target string is matched.
     Print current string and accuracy every thousand attempts.
-    If target is reached, print target string and attempt number."""
+    If target is reached, print target string and attempt number.
+    """
     match_is_possible = check_possible_match(character_pool, target_string)
     if not match_is_possible:
         print("This string cannot be reproduced using the current character pool.")
