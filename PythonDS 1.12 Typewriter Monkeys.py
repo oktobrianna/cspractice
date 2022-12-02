@@ -5,7 +5,6 @@ def generate_random_string(character_pool: str, target_string: str) -> str:
     """Generate a string of characters randomly chosen from a
     provided pool, equal to the length of a target string.
     """
-    
     random_string = ""
     while len(random_string) < len(target_string):
         new_char = choice(character_pool)
