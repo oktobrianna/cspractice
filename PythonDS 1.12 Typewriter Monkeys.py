@@ -1,12 +1,10 @@
 from random import choice
 
 
-def generate_random_string(character_pool: str, target_string: str) -> str:
-    """Generate a string of characters randomly chosen from a
-    provided pool, equal to the length of a target string.
-    """
+def generate_random_string(character_pool: str, target_length: int) -> str:
+    """Generate a string of characters randomly chosen from a provided pool."""
     random_string = ""
-    while len(random_string) < len(target_string):
+    while len(random_string) < target_length:
         new_char = choice(character_pool)
         random_string += new_char
     return random_string
@@ -23,14 +21,14 @@ def count_matches(trial_sequence: str | list, target_sequence: str | list) -> in
     return num_matches
 
 
-def check_possible_match(possible_items: str | list[str], trial_seq: str | list[str]) -> bool:
+def is_match_possible(possible_items: str | list[str], trial_seq: str | list[str]) -> bool:
     """Check whether all characters in one string appear in another string by comparing them as sets."""
     set_possible_items = {ch for ch in possible_items}
     set_trial_seq = {ch for ch in trial_seq}
     return set_trial_seq.issubset(set_possible_items)
 
 
-def generate_matching_sequence_slow(character_pool: str, target_string: str) -> str:
+def generate_matching_sequence_slow(character_pool: str, target_string: str) -> None:
     """Repeatedly generate random strings to match the target string.
 
     Call string generator to generate random strings of same length as target string.
@@ -39,20 +37,20 @@ def generate_matching_sequence_slow(character_pool: str, target_string: str) -> 
     Print current string and accuracy every thousand attempts.
     If target is reached, print target string and attempt number.
     """
-    match_is_possible = check_possible_match(character_pool, target_string)
-    if not match_is_possible:
+    if not is_match_possible(character_pool, target_string):
         print("This string cannot be reproduced using the current character pool.")
         return
     num_tries = 0
     isMatch = False
     while isMatch is False:
-        random_string = generate_random_string(character_pool, target_string)
+        random_string = generate_random_string(character_pool, len(target_string))
         num_tries += 1
         num_matches = count_matches(random_string, target_string)
         if num_matches == len(target_string):
             print(
                 f"Target sentence generated! Target was '{target_string},' randomly generated in {num_tries} attempts.")
             isMatch = True
+            return
         if num_tries % 1000 == 0:
             percent_matches = 100 * (num_matches / len(target_string))
             percent_matches = round(percent_matches, 2)
@@ -62,26 +60,21 @@ def generate_matching_sequence_slow(character_pool: str, target_string: str) -> 
 # obviously this thing is horribly inefficient. but ideally it's written well to do the thing badly.
 
 
-def generate_character_list(character_pool: str, target_string: str) -> list:
-    """Generate a list of characters randomly chosen from a provided pool, equal to the length of a target string."""
-    random_character_list = []  # this creates a list because a later function requires mutability.
-    while len(random_character_list) < len(target_string):
-        new_char = choice(character_pool)
-        random_character_list.append(new_char)
+def generate_character_list(character_pool: str, target_length: int) -> list[str]:
+    """Generate a list of characters randomly chosen from a provided pool.
+    List is used because a subsequent function requires mutability.
+    """
+    random_character_list = [choice(character_pool) for i in range(target_length)]
     return random_character_list
 
-# Question: I can produce the same result by replacing the iterated appending with a list comprehension,
-# but the time appears to come out the same (if I'm using timeit properly). Is this accurate?
-# I prefer the iteration for readability, but barely. Is this a good call?
-# The possible comprehension: random_character_list = [choice(character_pool) for i in range(len(target_string))]
 
 
-def randomly_revise_character(character_list: list[str], target_string: str, character_pool: str) -> list:
+def randomly_revise_character(character_list: list[str], target_string: str, character_pool: str) -> list[str]:
     """Randomly change the first character in a list that does not match
     the corresponding character in a target string. Return the revised list.
     """
-    for i in range(len(character_list)):
-        if character_list[i] != target_string[i]:
+    for i, char in enumerate(character_list):
+        if char != target_string[i]:
             character_list[i] = choice(character_pool)
             break
     return character_list
@@ -102,13 +95,11 @@ def generate_matching_sequence_fast(character_pool: str, target_string: str) -> 
     Print current string and accuracy every thousand attempts.
     If target is reached, print target string and attempt number.
     """
-    match_is_possible = check_possible_match(character_pool, target_string)
-    if not match_is_possible:
+    if not is_match_possible(character_pool, target_string):
         print("This string cannot be reproduced using the current character pool.")
         return
     isMatch = False
-    random_character_list = generate_character_list(
-        character_pool, target_string)
+    random_character_list = generate_character_list(character_pool, len(target_string))
     num_tries = 1
     while isMatch is False:
         num_matches = count_matches(random_character_list, target_string)
