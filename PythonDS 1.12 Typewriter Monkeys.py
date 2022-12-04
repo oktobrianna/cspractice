@@ -108,6 +108,7 @@ def generate_matching_sequence_fast(character_pool: str, target_string: str) -> 
             print(
                 f"Target sentence generated! Target was '{target_string},' randomly generated as '{final_string}' in {num_tries} attempts.")
             isMatch = True
+            return
         else:
             if num_tries % 200 == 0:
                 percent_matches = 100 * num_matches / len(target_string)
